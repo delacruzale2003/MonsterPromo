@@ -15,8 +15,7 @@ interface RegistrationHook {
     dni: string;
     phoneNumber: string;
     voucherNumber: string; 
-    // storeId: string | undefined; <--- Eliminado del contrato si este hook es solo para registro
-    storeId: string | undefined; // Lo mantenemos solo porque useParams lo devuelve, pero lo ignoramos
+    storeId: string | undefined;
     setName: (value: string) => void;
     setDni: (value: string) => void;
     setPhoneNumber: (value: string) => void;
@@ -94,11 +93,11 @@ export const useRegistration = (): RegistrationHook => {
         else if (trimmedPhone.length !== 9 || !/^\d+$/.test(trimmedPhone)) {
             validationError = "❌ Teléfono debe tener exactamente 9 dígitos numéricos.";
         }
-        // 3. Validar DNI (Obligatorio, 8-11 dígitos)
+        // 3. Validar DNI (Obligatorio, 8-11 dígitos) - APLICACIÓN DE MÍNIMO
         else if (trimmedDni.length < 8 || trimmedDni.length > 11 || !/^\d+$/.test(trimmedDni)) {
             validationError = "❌ DNI inválido (debe tener entre 8 y 11 dígitos numéricos).";
         } 
-        // 4. Validar Comprobante (Obligatorio, 6-20 caracteres)
+        // 4. Validar Comprobante (Obligatorio, 6-20 caracteres) - APLICACIÓN DE MÍNIMO
         else if (trimmedVoucher.length < 6 || trimmedVoucher.length > 20) {
             validationError = "❌ Comprobante inválido (debe tener entre 6 y 20 caracteres).";
         } 
@@ -112,8 +111,8 @@ export const useRegistration = (): RegistrationHook => {
             return;
         }
 
-        // 💡 ENDPOINT FIJO: Solo registro sin premios.
-        const endpoint = `/api/v1/only-register`;
+        // Determinar qué endpoint usar
+        const endpoint = storeId ? `/api/v1/claim` : `/api/v1/only-register`;
         
         setLoading(true);
 
@@ -143,8 +142,8 @@ export const useRegistration = (): RegistrationHook => {
             return;
         }
 
-        // 2. CONSTRUIR PAYLOAD FIJO (SIN storeId/prizeId)
-        const payload = {
+        // 2. CONSTRUIR PAYLOAD DINÁMICO
+        const basePayload = {
             name: trimmedName,
             phoneNumber: trimmedPhone,
             dni: trimmedDni,
@@ -152,6 +151,16 @@ export const useRegistration = (): RegistrationHook => {
             photoUrl,
             voucherNumber: trimmedVoucher, 
         };
+
+        let payload: any;
+
+        if (storeId) {
+            // Modo CLAIM (necesita storeId)
+            payload = { ...basePayload, storeId: storeId };
+        } else {
+            // Modo ONLY-REGISTER (no necesita storeId)
+            payload = basePayload;
+        }
         
         // 3. ENVIAR PAYLOAD FINAL AL BACKEND
         try {
@@ -164,8 +173,18 @@ export const useRegistration = (): RegistrationHook => {
             const resJson = await res.json();
 
             if (res.ok) {
-                // 💡 NAVEGACIÓN FIJA: Éxito de registro simple
-                navigate('/exit');
+                if (endpoint === '/api/v1/claim') {
+                     // Flujo con premio
+                    const prizeName = resJson.prize || "Un gran premio!";
+                    const finalPhotoUrl = resJson.photoUrl || photoUrl;
+
+                    navigate('/exit', {
+                        state: { prizeName, photoUrl: finalPhotoUrl },
+                    });
+                } else {
+                    // Flujo solo registro
+                    navigate('/exit'); 
+                }
                
             } else {
                 setMessage(`❌ ${resJson.message || "Error en el registro"}`);

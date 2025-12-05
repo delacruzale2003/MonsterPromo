@@ -29,14 +29,14 @@ const ExitPage = () => {
                 {/* 💡 CORRECCIÓN 1: Centrar logo de arriba */}
                 <img
                         src="/logomonster.png"
-                        alt="Logo CC Navidad"
-                        className="w-40 h-auto z-10 mx-auto mt-4" 
+                        alt="logomonster"
+                        className="w-60 h-auto z-10 mx-auto mt-4" 
                     />
                 
                 {/* 💡 MENSAJE DE REGISTRO EXITOSO */}
                 <h1 className="text-5xl text-white font-semibold font-teko tracking-normal leading-none">
                     <span className="block">¡GRACIAS!</span>
-                    <span className="block text-3xl font-mont-bold">YA ESTÁS PARTICIPANDO</span>
+                    <span className="block text-xl font-mont-bold">YA ESTÁS PARTICIPANDO</span>
                 </h1>
 
                 {/* Bloque de Contenido */}
@@ -46,7 +46,7 @@ const ExitPage = () => {
                     <img 
                         src="/premios.gif" 
                         alt="Premios de la Campaña" 
-                        className="mt-1 mx-auto rounded-lg max-h-56 object-contain w-full" 
+                        className="mt-1 mx-auto rounded-lg max-w-70 object-contain w-70" 
                     />
                     
                     
