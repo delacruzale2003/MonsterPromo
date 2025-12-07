@@ -34,11 +34,11 @@ const RegisterPage: React.FC = () => {
         borderColor: neonGreen,
     };
 
-    // 💡 Lógica de validación centralizada APLICANDO REGLAS MÍNIMAS/MÁXIMAS
+    // 💡 Lógica de validación centralizada
     const isFormValid = name.trim() !== '' 
         && phoneNumber.trim() !== '' 
         && dni.trim() !== '' 
-        && voucherNumber.trim() !== '' // 💡 AHORA OBLIGATORIO
+        && voucherNumber.trim() !== '' 
         && compressedFile;
 
     const isDisabled = loading || compressing || !isFormValid;
@@ -54,7 +54,7 @@ const RegisterPage: React.FC = () => {
             <img
                 src="/logomonster.png"
                 alt="logomonsteroxxo"
-                className="w-60 h-auto mb-4 z-10" 
+                className="w-40 h-auto mb-4 z-10" 
             />
             
             {/* Contenedor del Formulario (Transparente) */}
@@ -70,26 +70,28 @@ const RegisterPage: React.FC = () => {
                     const trimmedVoucher = voucherNumber.trim();
                     let validationError = '';
 
-                    // 1. Validar Nombre
-                    if (trimmedName.length > 45 || trimmedName.length === 0) {
+                    // 💡 PASO 1: VERIFICACIÓN RÁPIDA DE CAMPOS VACÍOS (Obligatoriedad)
+                    if (!trimmedName || !trimmedPhone || !trimmedDni || !trimmedVoucher || !compressedFile) {
+                        validationError = "❌ Todos los campos son obligatorios.";
+                    }
+                    // 2. Validar Nombre
+                    else if (trimmedName.length > 45) {
                         validationError = "❌ Nombre inválido (máx. 45 caracteres).";
                     } 
-                    // 2. Validar Teléfono (9 dígitos)
+                    // 3. Validar Teléfono (9 dígitos)
                     else if (trimmedPhone.length !== 9 || !/^\d+$/.test(trimmedPhone)) {
                         validationError = "❌ Teléfono debe tener exactamente 9 dígitos numéricos.";
                     }
-                    // 3. Validar DNI (8-11 dígitos, obligatorio)
+                    // 4. Validar DNI (8-11 dígitos)
                     else if (trimmedDni.length < 8 || trimmedDni.length > 11 || !/^\d+$/.test(trimmedDni)) {
                         validationError = "❌ DNI inválido (debe tener entre 8 y 11 dígitos numéricos).";
                     } 
-                    // 4. Validar Comprobante (6-20 caracteres, obligatorio)
+                    // 5. Validar Comprobante (6-20 caracteres)
                     else if (trimmedVoucher.length < 6 || trimmedVoucher.length > 20) {
                         validationError = "❌ Comprobante inválido (debe tener entre 6 y 20 caracteres).";
                     } 
-                    // 5. Validar Foto
-                    else if (!compressedFile) {
-                        validationError = "❌ La foto del comprobante es obligatoria.";
-                    }
+                    
+                    // 💡 NOTA: La validación de compressedFile ya se hace en el paso 1.
 
                     if (validationError) {
                         alert(validationError); // Usamos alert temporalmente para mensajes de error de formato
@@ -149,7 +151,6 @@ const RegisterPage: React.FC = () => {
                             onChange={(e) => setDni(e.target.value)}
                             maxLength={11}
                             required
-                            // 💡 AVISO: Se recomienda añadir minLength=8 aquí, pero solo afecta al navegador (no a JS/TS).
                             style={inputBorderStyle}
                             className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
                         />
@@ -167,8 +168,7 @@ const RegisterPage: React.FC = () => {
                             value={voucherNumber}
                             onChange={(e) => setVoucherNumber(e.target.value)}
                             maxLength={20}
-                            required // 💡 AHORA REQUERIDO
-                            // 💡 AVISO: Se recomienda añadir minLength=6 aquí.
+                            required 
                             style={inputBorderStyle}
                             className="bg-transparent border-3 p-3 w-full rounded-full text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all pl-10 shadow-inner"
                         />
@@ -203,7 +203,7 @@ const RegisterPage: React.FC = () => {
                         required
                         onChange={handleFileChange}
                         // 💡 ESTILO FILE INPUT: Botón con fondo verde predefinido
-                        className="w-full text-white/90 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-white-600"
+                        className="w-full text-white/90 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-green-500 file:text-black hover:file:bg-green-600"
                     />
 
                     {/* Preview cuadrado con loader */}
@@ -228,17 +228,18 @@ const RegisterPage: React.FC = () => {
 
             {/* BARRA FIJA INFERIOR PARA EL BOTÓN EN MÓVIL */}
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-transparent border-none z-20">
-  <button
-    type="submit"
-    form="registrationForm" // <-- Vincula el botón al formulario por ID
-    disabled={isDisabled}
-    className={`bg-transparent font-teko rounded-full text-5xl sm:text-2xl text-white p-3 w-50 max-w-md font-semibold transition-opacity duration-200 shadow-xl mx-auto block
-                border-2 hover:opacity-80 disabled:opacity-0`}
-    style={!isDisabled ? neonGlowStyle : {}}
-  >
-    {loading ? "ENVIANDO..." : "ENVIAR"}
-  </button>
-</div>
+                <button
+                    type="submit"
+                    form="registrationForm" // <-- Vincula el botón al formulario por ID
+                    disabled={isDisabled} 
+                    style={{ ...neonGlowStyle, ...inputBorderStyle }}
+                    // 💡 CORRECCIÓN DE ESTILO: Base Blanco/Texto Negro (activo). Disabled: Verde apagado/Texto Negro.
+                    className={`bg-transparent font-teko rounded-full text-5xl sm:text-2xl text-white p-3 w-50 max-w-md font-semibold transition-opacity duration-200 shadow-xl mx-auto block
+                border-2 hover:opacity-80 disabled:opacity-0`} 
+                >
+                    {loading ? "ENVIANDO..." : "ENVIAR"}
+                </button>
+            </div>
         </div>
     );
 };
