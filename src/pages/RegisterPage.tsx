@@ -1,7 +1,7 @@
 import React from "react";
 import { useRegistration } from "../hooks/useRegistration"; // <-- Corregido: eliminado .js
 import { User, Phone, Scan, Loader2 } from 'lucide-react';
-import BackgroundCC from "../components/BackgroundCC"; // <-- Corregido: eliminado .js
+// <-- Corregido: eliminado .js
 
 const RegisterPage: React.FC = () => {
     // Usamos el hook personalizado para acceder a toda la lógica y estados
@@ -42,13 +42,19 @@ const RegisterPage: React.FC = () => {
         && compressedFile;
 
     const isDisabled = loading || compressing || !isFormValid;
-
+    const backgroundStyle = {
+        // Asegura que la imagen de fondo esté disponible en la carpeta 'public'
+        backgroundImage: `url('/bg.png')`,
+        backgroundSize: 'cover', // Cubre todo el contenedor
+        backgroundPosition: 'center', // Centra la imagen
+        backgroundRepeat: 'no-repeat', // No repite la imagen
+    };
     return (
         // 💡 CAMBIO DE TEMA: Fondo principal negro/gris oscuro.
-        <div className="min-h-screen flex flex-col items-center justify-start p-4 pb-28 relative bg-black">
+        <div style={backgroundStyle} className="min-h-screen flex flex-col items-center justify-start p-4 pb-28 relative bg-black">
             
             {/* Componente de Fondo Animado */}
-            <BackgroundCC /> 
+            
             
             {/* Logo de la Campaña */}
             <img
