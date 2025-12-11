@@ -76,19 +76,19 @@ const RegisterPage: React.FC = () => {
                     }
                     // 2. Validar Nombre
                     else if (trimmedName.length > 45) {
-                        validationError = "❌ Nombre inválido (máx. 45 caracteres).";
+                        validationError = "❌ Nombre inválido error de formato";
                     } 
                     // 3. Validar Teléfono (9 dígitos)
                     else if (trimmedPhone.length !== 9 || !/^\d+$/.test(trimmedPhone)) {
-                        validationError = "❌ Teléfono debe tener exactamente 9 dígitos numéricos.";
+                        validationError = "❌ Teléfono debe tener  9 dígitos numéricos.";
                     }
                     // 4. Validar DNI (8-11 dígitos)
                     else if (trimmedDni.length < 8 || trimmedDni.length > 11 || !/^\d+$/.test(trimmedDni)) {
-                        validationError = "❌ DNI inválido (debe tener entre 8 y 11 dígitos numéricos).";
+                        validationError = "❌ DNI inválido error de formato";
                     } 
                     // 5. Validar Comprobante (6-20 caracteres)
                     else if (trimmedVoucher.length < 6 || trimmedVoucher.length > 20) {
-                        validationError = "❌ Comprobante inválido (debe tener entre 6 y 20 caracteres).";
+                        validationError = "❌ Comprobante inválido error de formato .";
                     } 
                     
                     // 💡 NOTA: La validación de compressedFile ya se hace en el paso 1.
